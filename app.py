@@ -1,13 +1,11 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import time
 
 st.set_page_config(page_title="East Africa Bandwidth Exchange", layout="wide")
 st.title("🌍 Place d'Arbitrage Télécom — Hub Est-Africain")
 st.write("Plateforme de courtage et d'enchères en temps réel pour les capacités de câbles sous-marins et réseaux terrestres (Djibouti, Somalie, Kenya, Éthiopie, Soudans, Érythrée, Ouganda).")
 
-# Simulation de flux de données de marché en direct
 @st.cache_data(ttl=5)
 def get_market_data():
     routes = [
@@ -18,13 +16,15 @@ def get_market_data():
         "Asmara Terrestrial ──► Khartoum Backbone"
     ]
     data = []
+    # Capacités standards de l'industrie (Gbps)
+    capacities = [10, 40, 100, 400, 1000]
     for r in routes:
-        cap = np.random.choice([10, 40, 100, 400]) # Gbps
+        cap = np.random.choice(capacities)
         base_p = 1200 if "Djibouti" in r else 1500
         price = round(base_p * (1 + np.random.uniform(-0.15, 0.10)), 2)
         data.append({
             "Axe de Distribution": r,
-            "Capacité Disponible (Gbps)": cap,
+            "Capacité Disponible (Gbps)": int(cap),
             "Prix Actuel ($/Mbps/Mois)": price,
             "Tendance": np.random.choice(["⬇️ Stable", "🔥 En Hausse", "📉 En Baisse"])
         })
@@ -32,11 +32,9 @@ def get_market_data():
 
 market_df = get_market_data()
 
-# Affichage des cours du marché de gros
 st.subheader("⚡ Cours de la Capacité Réseau de Gros en Direct")
 st.dataframe(market_df, use_container_width=True)
 
-# Interface d'achat d'arbitrage pour les FAI
 st.write("---")
 st.subheader("🛒 Terminal de Négociation pour Fournisseurs d'Accès (FAI)")
 
@@ -60,8 +58,9 @@ with col2:
             st.error("Veuillez entrer le nom de votre structure télécom.")
 
 st.write("---")
-st.subheader("💼 Espace Opérateurs Tier-1 (Vendeurs : Orange, EthioTelecom, Djibouti Telecom...)
+st.subheader("💼 Espace Opérateurs Tier-1 (Vendeurs : Orange, EthioTelecom, Djibouti Telecom...) ")
 email_operator = st.text_input("Email corporate pour lister vos surplus de capacité non-utilisés (Dark Fiber / STM-64) :")
 if st.button("Ouvrir un compte Liquidity Provider"):
     if email_operator:
         st.success(f"Demande de partenariat émise pour {email_operator}. Nos équipes d'infrastructure réseau vous recontacteront.")
+
